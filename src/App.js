@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import { css, jsx } from "@emotion/core";
 import styled from "@emotion/styled";
@@ -23,13 +23,14 @@ const Input = styled.input`
   line-height: 16px;
 `;
 
-function FullField({ name, label }) {
+
+function FullField({ name, label, type }) {
   return (
     <div>
       <Label name="fvfgvtbtbh">{label}</Label>
-      <Field name={name} as={Input} />
+      <Field name={name} as={Input} type={type}/>
       <div>
-        <ErrorMessage name={name} />
+        <ErrorMessage component="div" className="error--login" name={name} />
       </div>
     </div>
   );
@@ -65,17 +66,19 @@ const SubmitButton = styled.button`
 `;
 
 function App() {
-  //const [user, setUser] = useState();
-  //const [loginState, setLoginState] = userState(true);
+  const [user, setUser] = useState();
+  const [loginState, setLoginState] = useState(true);
 
   async function loginUser(values) {
     try {
       const newUser = await login(values);
-      //setUser(newUser);
-      console.log(newUser);
+      setUser(newUser);
+      console.log(user);
+      setLoginState(true);
     } catch (e) {
-      prompt("invalid cdcdcdcdc");
-      //setLoginState(!loginUser);
+      console.log("invalid cdcdcdcdc");
+      setLoginState(!loginState);
+      console.log(loginState);
     }
   }
  
@@ -93,11 +96,12 @@ function App() {
         }}
         validationSchema={Yup.object({
           email: Yup.string()
-            .email()
-            .required(),
+            .email("Email is not valid")
+            .required("Email is a required field"),
           password: Yup.string()
-            .min(6, "Must have more than 6 digits")
-            .required()
+            .min(6, "Password is not valid: 6-40 digits")
+            .max(40,"Password is not valid: 6-40 digits")
+            .required("Password is a required field")
         })}
         onSubmit={(values) => {loginUser(values)}}
       >
@@ -108,10 +112,11 @@ function App() {
             alignItems: "center"
           }}
         >
+          {(!loginState) ? (<p className="error--login">Provided credentials are invalid</p>) : null}
           <FullField name="email" label="Email Adress" />
-          <FullField name="password" label="Password" />
+          <FullField name="password" label="Password" type="password"/>
           <SubmitButton type="submit">Submit</SubmitButton>
-          <p>
+          <p style={{fontWeight: "bold"}}>
             Don’t have an account?{" "}
             <a href="#" style={{ color: "#A3BFFA" }}>
               Signup

@@ -14,3 +14,9 @@ body {
   width: 100%;
   font-family: "Nunito";
 }
+
+
+.error--login {
+  color: #E53E3E;
+  margin-bottom: 8px;
+}
