@@ -1,11 +1,18 @@
-import React, {useState} from "react";
+import React, { useState, useContext, createContext } from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import { css, jsx } from "@emotion/core";
 import styled from "@emotion/styled";
 import * as Yup from "yup";
 import "./App.css";
 import logo from "./images/logo.png";
-import {login} from "./api";
+import { login } from "./api";
+import {
+  BrowserRouter as Router,
+  Route,
+  Link,
+  Switch,
+  Redirect
+} from "react-router-dom";
 
 function Label(props) {
   return <label style={{ display: "block" }} {...props} />;
@@ -23,12 +30,11 @@ const Input = styled.input`
   line-height: 16px;
 `;
 
-
 function FullField({ name, label, type }) {
   return (
     <div>
       <Label name="fvfgvtbtbh">{label}</Label>
-      <Field name={name} as={Input} type={type}/>
+      <Field name={name} as={Input} type={type} />
       <div>
         <ErrorMessage component="div" className="error--login" name={name} />
       </div>
@@ -65,8 +71,8 @@ const SubmitButton = styled.button`
   border: none;
 `;
 
-function App() {
-  const [user, setUser] = useState();
+function LoginForm() {
+  const [user, setUser] = useContext(userContext);
   const [loginState, setLoginState] = useState(true);
 
   async function loginUser(values) {
@@ -81,12 +87,15 @@ function App() {
       console.log(loginState);
     }
   }
- 
+
   return (
     <Container>
       <img src={logo} alt="logo" />
       <IntroMsg>
-        Hi! Welcome to Walletable 👋
+        Hi! Welcome to Walletable{" "}
+        <span role="img" aria-label="wave">
+          👋
+        </span>
         <br /> Signin to start enyoing your new money management super powers!
       </IntroMsg>
       <Formik
@@ -100,10 +109,12 @@ function App() {
             .required("Email is a required field"),
           password: Yup.string()
             .min(6, "Password is not valid: 6-40 digits")
-            .max(40,"Password is not valid: 6-40 digits")
+            .max(40, "Password is not valid: 6-40 digits")
             .required("Password is a required field")
         })}
-        onSubmit={(values) => {loginUser(values)}}
+        onSubmit={values => {
+          loginUser(values);
+        }}
       >
         <Form
           style={{
@@ -112,19 +123,100 @@ function App() {
             alignItems: "center"
           }}
         >
-          {(!loginState) ? (<p className="error--login">Provided credentials are invalid</p>) : null}
+          {!loginState ? (
+            <p className="error--login">Provided credentials are invalid</p>
+          ) : null}
           <FullField name="email" label="Email Adress" />
-          <FullField name="password" label="Password" type="password"/>
+          <FullField name="password" label="Password" type="password" />
           <SubmitButton type="submit">Submit</SubmitButton>
-          <p style={{fontWeight: "bold"}}>
+          <p style={{ fontWeight: "bold" }}>
             Don’t have an account?{" "}
-            <a href="#" style={{ color: "#A3BFFA" }}>
+            <Link to="/sign-up" style={{ color: "#A3BFFA" }}>
               Signup
-            </a>
+            </Link>
           </p>
         </Form>
       </Formik>
     </Container>
+  );
+}
+
+function SignUpForm() {
+  return (
+    <Container>
+      <img src={logo} alt="logo" />
+      <IntroMsg>
+        Hi! Welcome to Walletable{" "}
+        <span role="img" aria-label="wave">
+          👋
+        </span>
+        <br /> Signin to start enyoing your new money management super powers!
+      </IntroMsg>
+      <Formik
+        initialValues={{
+          firstName: "",
+          lastName: "",
+          phoneNumber: "",
+          email: "",
+          password: "",
+          confirmPassword: ""
+        }}
+        validationSchema={Yup.object({
+          email: Yup.string()
+            .email("Email is not valid")
+            .required("Email is a required field"),
+          password: Yup.string()
+            .min(6, "Password is not valid: 6-40 digits")
+            .max(40, "Password is not valid: 6-40 digits")
+            .required("Password is a required field")
+        })}
+        onSubmit={values => {
+          //signUp(values);
+        }}
+      >
+        <Form
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center"
+          }}
+        >
+          <FullField name="firstName" label="First Name" />
+          <FullField name="lastName" label="Last Name" />
+          <FullField name="phoneNumber" label="Phone Number" />
+          <FullField name="email" label="Email Adress" />
+          <FullField name="password" label="Password" type="password" />
+          <FullField
+            name="confirmPassword"
+            label="Confirm Password"
+            type="password"
+          />
+          <SubmitButton type="submit">Submit</SubmitButton>
+          <p style={{ fontWeight: "bold" }}>
+            Don’t have an account?{" "}
+            <Link to="/sing-up" style={{ color: "#A3BFFA" }}>
+              Signup
+            </Link>
+          </p>
+        </Form>
+      </Formik>
+    </Container>
+  );
+}
+
+const userContext = React.createContext(); 
+
+function App() {
+  const [user, setUser] = useState();
+  
+
+  return (
+    <Router>
+      <userContext.Provider value={[user, setUser]} >
+      <Route path="/" exact component={LoginForm} />
+      <Route path="/sign-up" component={SignUpForm} />
+      </userContext.Provider>
+    </Router>
   );
 }
 
