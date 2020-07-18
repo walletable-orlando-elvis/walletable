@@ -5,6 +5,7 @@ import styled from "@emotion/styled";
 import * as Yup from "yup";
 import "./App.css";
 import logo from "./images/logo.png";
+import {login} from "./api";
 
 function Label(props) {
   return <label style={{ display: "block" }} {...props} />;
@@ -64,15 +65,17 @@ const SubmitButton = styled.button`
 `;
 
 function App() {
-  const [user, setUser] = userState();
+  //const [user, setUser] = useState();
+  //const [loginState, setLoginState] = userState(true);
 
   async function loginUser(values) {
     try {
       const newUser = await login(values);
-      setUser(newUser);
-      console.log(user);
+      //setUser(newUser);
+      console.log(newUser);
     } catch (e) {
       prompt("invalid cdcdcdcdc");
+      //setLoginState(!loginUser);
     }
   }
  
