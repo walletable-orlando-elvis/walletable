@@ -11,7 +11,7 @@ import {
   Route,
   Link,
   Switch,
-  Redirect
+  Redirect,
 } from "react-router-dom";
 
 function Label(props) {
@@ -101,7 +101,7 @@ function LoginForm() {
       <Formik
         initialValues={{
           email: "",
-          password: ""
+          password: "",
         }}
         validationSchema={Yup.object({
           email: Yup.string()
@@ -110,9 +110,9 @@ function LoginForm() {
           password: Yup.string()
             .min(6, "Password is not valid: 6-40 digits")
             .max(40, "Password is not valid: 6-40 digits")
-            .required("Password is a required field")
+            .required("Password is a required field"),
         })}
-        onSubmit={values => {
+        onSubmit={(values) => {
           loginUser(values);
         }}
       >
@@ -120,7 +120,7 @@ function LoginForm() {
           style={{
             display: "flex",
             flexDirection: "column",
-            alignItems: "center"
+            alignItems: "center",
           }}
         >
           {!loginState ? (
@@ -168,7 +168,7 @@ function SignUpForm() {
           phone: "",
           email: "",
           password: "",
-          confirmPassword: ""
+          confirmPassword: "",
         }}
         validationSchema={Yup.object({
           email: Yup.string()
@@ -177,9 +177,9 @@ function SignUpForm() {
           password: Yup.string()
             .min(6, "Password is not valid: 6-40 digits")
             .max(40, "Password is not valid: 6-40 digits")
-            .required("Password is a required field")
+            .required("Password is a required field"),
         })}
-        onSubmit={values => {
+        onSubmit={(values) => {
           createAccount(values);
           console.log(values);
         }}
@@ -188,7 +188,7 @@ function SignUpForm() {
           style={{
             display: "flex",
             flexDirection: "column",
-            alignItems: "center"
+            alignItems: "center",
           }}
         >
           <FullField name="first_name" label="First Name" />
@@ -214,17 +214,84 @@ function SignUpForm() {
   );
 }
 
-const userContext = React.createContext(); 
+const userContext = React.createContext();
+
+const Wrapper = styled.div`
+  width: 928px;
+  height: 945px;
+  background: #ffffff;
+  border-radius: 8px;
+`;
+
+const Nav = styled.nav`
+  display: flex;
+  justify-content: space-between;
+  width: 900px;
+  margin: 0 auto;
+  padding: 20px 15px 6px; 20px;
+  border-bottom: 1px solid #718096;
+`;
+
+const List = styled.nav`
+  display: flex;
+`;
+
+function Navbar() {
+  return (
+    <Nav>
+      <List>
+        <Link to="/transactions">Transactions</Link>
+        <Link to="/reports">Reports</Link>
+      </List>
+      <List>
+        <Link to="/profile">Profile</Link>
+        <Link to="/logout">Logout</Link>
+      </List>
+    </Nav>
+  );
+}
+
+function TransactionForm() {
+  return (
+    <Formik
+      initialValues={{
+        category: "",
+        : "",
+        phone: "",
+        email: "",
+        password: "",
+        ammount: "",
+      }}
+    >
+      <Form>
+        <label htmlFor="email" style={{ display: "block" }}>
+          Color
+        </label>
+        <input type="date" {...formik.getFieldProps("date")} />
+        <select
+          name="color"
+          value={values.color}
+          onChange={handleChange}
+          style={{ display: "block" }}
+        >
+          <option value="" label="Select a color" />
+          <option value="red" label="red" />
+          <option value="blue" label="blue" />
+          <option value="green" label="green" />
+        </select>
+      </Form>
+    </Formik>
+  );
+}
 
 function App() {
   const [user, setUser] = useState();
-  
 
   return (
     <Router>
-      <userContext.Provider value={[user, setUser]} >
-      <Route path="/" exact component={LoginForm} />
-      <Route path="/sign-up" component={SignUpForm} />
+      <userContext.Provider value={[user, setUser]}>
+        <Route path="/" exact component={LoginForm} />
+        <Route path="/sign-up" component={SignUpForm} />
       </userContext.Provider>
     </Router>
   );
