@@ -1,4 +1,4 @@
-import React, { useState, useContext, createContext } from "react";
+import React, { useState, useContext, createContext, useEffect } from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import { css, jsx } from "@emotion/core";
 import styled from "@emotion/styled";
@@ -103,14 +103,14 @@ function LoginForm() {
           email: "",
           password: ""
         }}
-        validationSchema={Yup.object({
+        validationSchema={Yup.object({   
           email: Yup.string()
             .email("Email is not valid")
             .required("Email is a required field"),
           password: Yup.string()
             .min(6, "Password is not valid: 6-40 digits")
             .max(40, "Password is not valid: 6-40 digits")
-            .required("Password is a required field")
+            .required("Password is a required field"),
         })}
         onSubmit={values => {
           loginUser(values);
@@ -171,13 +171,25 @@ function SignUpForm() {
           confirmPassword: ""
         }}
         validationSchema={Yup.object({
+          first_name: Yup.string()
+            .required("Firt Name is a required field"),
+          last_name: Yup.string()
+            .required("Last name is a required field"),
+          phone: Yup.number()
+            .min(9, "Phone number must have 9 digits")
+            .max(9, "Phone number must have 9 digits")
+            .required("Phone numnber is a required field"), 
           email: Yup.string()
             .email("Email is not valid")
             .required("Email is a required field"),
           password: Yup.string()
             .min(6, "Password is not valid: 6-40 digits")
             .max(40, "Password is not valid: 6-40 digits")
-            .required("Password is a required field")
+            .required("Password is a required field"),
+          confirmPassword: Yup.string().oneOf(
+            [Yup.ref("password")], "Password must match"
+          )
+          .required("Confirm your password")
         })}
         onSubmit={values => {
           createAccount(values);
@@ -203,7 +215,7 @@ function SignUpForm() {
           />
           <SubmitButton type="submit">Submit</SubmitButton>
           <p style={{ fontWeight: "bold" }}>
-            Don’t have an account?{" "}
+            Already have an account?{" "}
             <Link to="/sing-up" style={{ color: "#A3BFFA" }}>
               Signup
             </Link>
@@ -217,8 +229,12 @@ function SignUpForm() {
 const userContext = React.createContext(); 
 
 function App() {
-  const [user, setUser] = useState();
+  const [user, setUser] = useState(JSON.parse(localStorage.user));
   
+  useEffect(() => {
+    if(user) localStorage.setItem("user",JSON.stringify(user));
+    else localStorage.removeItem("user");
+  }, [user]);
 
   return (
     <Router>
