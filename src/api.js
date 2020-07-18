@@ -22,3 +22,13 @@ export async function login(values) {
   const data = await response.json();
   return data;
 }
+
+
+export async function signUp(values) {
+  const response = await request(`${API_ROOT}/users`,{
+    method: "POST",
+    body: JSON.stringify(values)
+  });
+  const data = await response.json();
+  return data;
+}

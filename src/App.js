@@ -5,7 +5,7 @@ import styled from "@emotion/styled";
 import * as Yup from "yup";
 import "./App.css";
 import logo from "./images/logo.png";
-import { login } from "./api";
+import { login, signUp } from "./api";
 import {
   BrowserRouter as Router,
   Route,
@@ -142,6 +142,15 @@ function LoginForm() {
 }
 
 function SignUpForm() {
+  const [user, setUser] = useContext(userContext);
+
+  async function createAccount(values) {
+    const newUser = await signUp(values);
+    setUser(newUser);
+    console.log(user);
+    console.log("Se pudo loguear");
+  }
+
   return (
     <Container>
       <img src={logo} alt="logo" />
@@ -154,9 +163,9 @@ function SignUpForm() {
       </IntroMsg>
       <Formik
         initialValues={{
-          firstName: "",
-          lastName: "",
-          phoneNumber: "",
+          first_name: "",
+          last_name: "",
+          phone: "",
           email: "",
           password: "",
           confirmPassword: ""
@@ -171,7 +180,8 @@ function SignUpForm() {
             .required("Password is a required field")
         })}
         onSubmit={values => {
-          //signUp(values);
+          createAccount(values);
+          console.log(values);
         }}
       >
         <Form
@@ -181,9 +191,9 @@ function SignUpForm() {
             alignItems: "center"
           }}
         >
-          <FullField name="firstName" label="First Name" />
-          <FullField name="lastName" label="Last Name" />
-          <FullField name="phoneNumber" label="Phone Number" />
+          <FullField name="first_name" label="First Name" />
+          <FullField name="last_name" label="Last Name" />
+          <FullField name="phone" label="Phone Number" />
           <FullField name="email" label="Email Adress" />
           <FullField name="password" label="Password" type="password" />
           <FullField
