@@ -1,8 +1,8 @@
-import React from 'react';
+import {React, userState} from 'react';
 import {Formik, Field, Form, ErrorMessage} from 'formik';
 import * as Yup from 'yup';
 import './App.css';
-
+import {login} from "./api.js"
 
 function Label(props) {
   return <label style={{ display: "block" }} {...props} />;
@@ -21,6 +21,18 @@ function FullField({ name, label }) {
 }
 
 function App() {
+  const [user, setUser] = userState();
+
+  async function loginUser(values) {
+    try {
+      const newUser = await login(values);
+      setUser(newUser);
+      console.log(user);
+    } catch (e) {
+      prompt("invalid cdcdcdcdc");
+    }
+  }
+ 
   return (
     <Formik
       initialValues={{
@@ -35,10 +47,7 @@ function App() {
           .min(6, "Must have more than 6 digits")
           .required(),
       })}
-      onSubmit={(values, actions) => {
-        // api function
-        console.log({ values, actions });
-      }}
+      onSubmit={(values) => {loginUser(values)}}
     >
       <Form>
         <h2>Login</h2>
