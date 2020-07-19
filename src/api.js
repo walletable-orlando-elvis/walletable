@@ -1,5 +1,5 @@
 const API_ROOT = "http://localhost:3000";
-const HEADERS = { "Content-Type": "application/json", "Authorization": `Bearer ${JSON.parse(localStorage.user).token}`};
+let HEADERS =  localStorage.user !== undefined ? {"Content-Type": "application/json", "Authorization": `Bearer ${JSON.parse(localStorage.user).token}`} : {"Content-Type": "application/json"};
 
 async function request(url, options = {}) {
   const headers = options.headers

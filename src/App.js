@@ -81,17 +81,22 @@ const SubmitButton = styled.button`
 function LoginForm() {
   const [user, setUser] = useContext(userContext);
   const [loginState, setLoginState] = useState(true);
+  const [success, setSuccess] = useState(false);
 
   async function loginUser(values) {
     try {
       const newUser = await login(values);
       setUser(newUser);
       setLoginState(true);
+      setSuccess(true);
     } catch (e) {
-      setLoginState(!loginState);
+      setLoginState(false);
     }
   }
+  
+  //if(success) return <Redirect to="/home" />;
 
+  
   return (
     <Container>
       <img src={logo} alt="logo" />
@@ -270,6 +275,12 @@ const SesionOptions = styled(Link)`
 `; 
 
 function Navbar() {
+  const [user, setUser] = useContext(userContext);
+
+  function closeSesion() {
+    setUser(undefined);
+  }
+
   return (
     <Nav>
       <List>
@@ -278,45 +289,11 @@ function Navbar() {
       </List>
       <List>
         <SesionOptions to="/profile">Profile</SesionOptions>
-        <SesionOptions to="/logout">Logout</SesionOptions>
+        <SesionOptions to="/login" onClick={closeSesion}>Logout</SesionOptions>
       </List>
     </Nav>
   );
 }
-
-/*
-function TransactionForm() {
-  return (
-    <Formik
-      initialValues={{
-        category: "",
-        date: "",
-        description: "",
-        amount: "",
-        payee: ""
-      }}
-    >
-      <Form>
-        <label htmlFor="email" style={{ display: "block" }}>
-          Color
-        </label>
-        <input type="date" {...formik.getFieldProps("date")} />
-        <select
-          name="color"
-          value={values.color}
-          onChange={handleChange}
-          style={{ display: "block" }}
-        >
-          <option value="" label="Select a color" />
-          <option value="red" label="red" />
-          <option value="blue" label="blue" />
-          <option value="green" label="green" />
-        </select>
-      </Form>
-    </Formik>
-  );
-}
-*/
 
 const TopContainer = styled.div`
   width: 928px;
@@ -411,10 +388,10 @@ function MainPage() {
 
 
 function App() {
-  const [user, setUser] = useState(JSON.parse(localStorage.user));
+  const [user, setUser] = useState();
   
   useEffect(() => {
-    if(user) localStorage.setItem("user",JSON.stringify(user));
+    if(user !== undefined) localStorage.setItem("user",JSON.stringify(user));
     else localStorage.removeItem("user");
   }, [user]);
 
