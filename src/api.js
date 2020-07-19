@@ -1,5 +1,5 @@
 const API_ROOT = "http://localhost:3000";
-const HEADERS = { "Content-Type": "application/json" };
+const HEADERS = { "Content-Type": "application/json", "Authorization": `Bearer ${JSON.parse(localStorage.user).token}`};
 
 async function request(url, options = {}) {
   const headers = options.headers
@@ -7,7 +7,7 @@ async function request(url, options = {}) {
     : HEADERS;
   const response = await fetch(url, {
     ...options,
-    headers: headers,
+    headers: headers
   });
   if (!response.ok) {
     throw new Error("Bad request");
@@ -28,6 +28,14 @@ export async function signUp(values) {
   const response = await request(`${API_ROOT}/users`,{
     method: "POST",
     body: JSON.stringify(values)
+  });
+  const data = await response.json();
+  return data;
+}
+
+export async function getTransactions() {
+  const response = await request(`${API_ROOT}/transactions`,{
+    method: "GET",
   });
   const data = await response.json();
   return data;

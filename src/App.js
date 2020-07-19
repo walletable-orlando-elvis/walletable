@@ -5,7 +5,14 @@ import styled from "@emotion/styled";
 import * as Yup from "yup";
 import "./App.css";
 import logo from "./images/logo.png";
-import { login, signUp } from "./api";
+import { login, signUp, getTransactions } from "./api";
+import food_and_drinks from "./images/food_and_drink.png";
+import housing from "./images/housing.png";
+import shopping from "./images/housing_category.png";
+import income from "./images/income_category.png";
+import others from "./images/other_category.png";
+import transport from "./images/transport_category.png";
+import services from "./images/utilities_category.png";
 import {
   BrowserRouter as Router,
   Route,
@@ -79,12 +86,9 @@ function LoginForm() {
     try {
       const newUser = await login(values);
       setUser(newUser);
-      console.log(user);
       setLoginState(true);
     } catch (e) {
-      console.log("invalid cdcdcdcdc");
       setLoginState(!loginState);
-      console.log(loginState);
     }
   }
 
@@ -147,8 +151,6 @@ function SignUpForm() {
   async function createAccount(values) {
     const newUser = await signUp(values);
     setUser(newUser);
-    console.log(user);
-    console.log("Se pudo loguear");
   }
 
   return (
@@ -193,7 +195,6 @@ function SignUpForm() {
         })}
         onSubmit={(values) => {
           createAccount(values);
-          console.log(values);
         }}
       >
         <Form
@@ -230,9 +231,11 @@ const userContext = React.createContext();
 
 const Wrapper = styled.div`
   width: 928px;
-  height: 945px;
-  background: #ffffff;
+  height: auto;
+  background-color: #ffffff;
   border-radius: 8px;
+  margin-top: 49px;
+  margin-bottom: 30px;
 `;
 
 const Nav = styled.nav`
@@ -246,33 +249,51 @@ const Nav = styled.nav`
 
 const List = styled.nav`
   display: flex;
+  text-decoration: none;
 `;
+
+const StyledLink = styled(Link)`
+  text-decoration:none;
+  color: #4C51BF;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 22px;
+  margin-right: 22px;
+`;
+
+const SesionOptions = styled(Link)`
+  font-size: 16px;
+  line-height: 22px;
+  color: #434190;
+  text-decoration: none;
+  margin-left: 12px;
+`; 
 
 function Navbar() {
   return (
     <Nav>
       <List>
-        <Link to="/transactions">Transactions</Link>
-        <Link to="/reports">Reports</Link>
+        <StyledLink to="/transactions">Transactions</StyledLink>
+        <StyledLink to="/reports">Reports</StyledLink>
       </List>
       <List>
-        <Link to="/profile">Profile</Link>
-        <Link to="/logout">Logout</Link>
+        <SesionOptions to="/profile">Profile</SesionOptions>
+        <SesionOptions to="/logout">Logout</SesionOptions>
       </List>
     </Nav>
   );
 }
 
+/*
 function TransactionForm() {
   return (
     <Formik
       initialValues={{
         category: "",
-        : "",
-        phone: "",
-        email: "",
-        password: "",
-        ammount: "",
+        date: "",
+        description: "",
+        amount: "",
+        payee: ""
       }}
     >
       <Form>
@@ -295,6 +316,99 @@ function TransactionForm() {
     </Formik>
   );
 }
+*/
+
+const TopContainer = styled.div`
+  width: 928px;
+  height: 71px;
+  background-color: #EBF4FF;
+  margin-top: 20px;
+  margin-bot: 20px; 
+`;
+
+const TransactionsWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const Item = styled.div`
+  display: flex;
+  height: 76px;
+  margin-ritght: 14px;
+  margin-left: 14px;
+  align-items:center;
+  justify-content: space-around;
+  border-bottom: 1px solid #434190;
+`;
+
+function BalanceSection() {
+
+  return(
+    <TopContainer>
+    </TopContainer>
+  );
+}
+
+
+function DataItem(props) {
+  
+  return(
+    <div style={{width: "140px"}}>
+      <p>{props.data}</p>
+      <p>{props.label}</p>    
+    </div>
+  );
+}
+
+
+function Transaction({item}) {
+
+  const categoriesImg = {
+    food_and_drinks: food_and_drinks,
+    others: others,
+    shopping: shopping,
+    services: services,
+    transport: transport,
+    housing: housing,
+    income: income
+      
+  };
+
+  const date = new Date(item.created_at);
+  const strDate =
+    date.toLocaleString("en", { day: "numeric" }) + ' ' +
+    date.toLocaleString("en", { month: "long"  })
+  
+  return(
+    <Item>
+      <img src={categoriesImg[item.category]} alt="#" />    
+      <DataItem data={item.category} label="category" />
+      <DataItem data={item.payee} label="Payee" />
+      <DataItem data={item.description} label="Description" />
+      <DataItem data={strDate} label="fecha" />
+      <DataItem data={item.amount} label="Amount" />
+    </Item>  
+  );
+}
+
+function MainPage() {
+  const [transactions, setTransactions] = useState([]);
+
+  useEffect(() => getTransactions().then((t) => {setTransactions(t)}), []);
+
+  return(
+    <Wrapper>
+      <Navbar/>
+      <BalanceSection/>
+      <TransactionsWrapper>
+        {transactions.map((transaction) => {
+          return <Transaction key={Date.now} item={transaction}/>;
+        })}
+      </TransactionsWrapper>
+    </Wrapper>
+  );
+}
+
 
 function App() {
   const [user, setUser] = useState(JSON.parse(localStorage.user));
@@ -307,9 +421,10 @@ function App() {
   return (
     <Router>
       <userContext.Provider value={[user, setUser]}>
-        <Route path="/" exact component={LoginForm} />
+        <Route path="/login" exact component={LoginForm} />
         <Route path="/sign-up" component={SignUpForm} />
-      </userContext.Provider>
+        <Route path="/home" component={MainPage} />
+        </userContext.Provider>  
     </Router>
   );
 }
