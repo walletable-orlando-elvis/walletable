@@ -1,5 +1,12 @@
 # Walletable
 
-Starting point for the project with images/icons.
-
-You can download more images from figma if you think they are needed.
+Integrantes: 
+  - Orlando Rojas
+  - Elvis Quispe
+  
+Routes:
+  - /login
+  - /sign-up
+  - /home
+  
+We are very sorry for the spaghetti code you are about to see, our sincere apologies.
